@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<p>
+    Перейдите по ссылке <a href="{{authUrl}}" target="_blank">Auth</a>
+</p>
+<p>
+    Полученный код - введите сюда
+    <form method="post" action="/code">
+        <input type="text" name="code" />
+        <input type="submit" value="Отправить" />
+    </form>
+</p>
+{% endblock %}
