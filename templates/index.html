@@ -1,14 +1,28 @@
 {% extends "layout.html" %}
 
 {% block content %}
+<br/>
+<ul class="nav nav-tabs" role="tablist">
+    <li class="active"><a href="#">1. Link Dropbox</a></li>
+    <li><a href="/choose">2. Choose folder</a></li>
+    <li><a href="/done">3. Browse OPDS</a></li>
+</ul>
+<h1>Link Dropbox account</h1>
 <p>
-    Перейдите по ссылке <a href="{{authUrl}}" target="_blank">Auth</a>
+    Press the button below to get access code from Dropbox.<br />
+    After obtainng the code - please enter it into the form below.<br /><br />
+    <a class="btn btn-primary" href="{{authUrl}}" target="_blank">Get access code</a>
 </p>
+    <br />
 <p>
-    Полученный код - введите сюда
-    <form method="post" action="/code">
-        <input type="text" name="code" />
-        <input type="submit" value="Отправить" />
+    Please enter access code below
+    <form role="form" method="post" class="form-horizontal col-sm-4" action="/code">
+        <div class="form-group">
+            <input type="text" name="code" class="form-control" id="dropboxAccessCode" placeholder="Enter code">
+        </div>
+        <div class="form-group">
+            <input type="submit" class="btn btn-primary" value="Link Dropbox account" />
+        </div>
     </form>
 </p>
 {% endblock %}
