@@ -24,7 +24,11 @@ $app->get('/link', function() use ($app) {
 
 // select OPDS-published folder
 $app->get('/choose/{path}', function ($path) use ($app) {
-    $folderMetadata = $app['user.dboxClient']->getMetadataWithChildren("/" . $path);
+    try {
+        $folderMetadata = $app['user.dboxClient']->getMetadataWithChildren("/" . $path);
+    } catch (\Exception $e) {
+        return new RedirectResponse('/');
+    }
     return $app['twig']->render( 'account.html', [
         'entries' => $app['injectBasename']($folderMetadata['contents']),
         'path' => $path
@@ -34,6 +38,10 @@ $app->get('/choose/{path}', function ($path) use ($app) {
 ->assert('path', '.*');
 
 $app->get('/done', function() use ($app) {
+    $user = $app['persi']->getCurrentUser();
+    if (!$user->booksFolder) {
+        return new RedirectResponse('/');
+    }
     return $app['twig']->render('done.html', []);
 });
 

@@ -1,20 +1,34 @@
 {% extends "layout.html" %}
 
 {% block content %}
+<br/>
+<ul class="nav nav-tabs" role="tablist">
+    <li><a href="/link">1. Link Dropbox</a></li>
+    <li class="active"><a href="#">2. Choose folder</a></li>
+    <li><a href="/done">3. Browse OPDS</a></li>
+</ul>
+<h1>Choose folder to publish with OPDS</h1>
+
+    <div class="alert alert-warning" role="alert">
+            <b>Note:</b> only the files located immediately in selected folder will be published. Subdirectories and their
+            content will not.
+    </div>
 
     {{ render('/selected-folder') }}
-
+    <br />
     {{ render('/folder-menu/' ~ path) }}
 
-    <ul>
+    <ul class="nav nav-pills nav-stacked col-sm-5">
     {% for entry in entries %}
-        <li>
-            {% if entry.is_dir %}
+        {% if entry.is_dir %}
+            <li>
                 <a href="/choose{{entry.path}}">{{entry.basename}}</a>
-            {% else %}
-                {{entry.basename}}
-            {% endif %}
-        </li>
+            </li>
+        {% else %}
+            <li class="disabled">
+                <a href="#">{{entry.basename}}</a>
+            </li>
+        {% endif %}
     {% endfor %}
     </ul>
 {% endblock %}

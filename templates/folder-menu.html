@@ -1,7 +1,8 @@
 <p>
-    <a href="/select-folder/{{path}}">Select this folder ( /{{path}} )</a>
+    <b>This folder:</b> /{{path}}
+    <a class="btn btn-default" href="/select-folder/{{path}}"><span class="glyphicon glyphicon-ok"></span> Select </a>
     {% if path %}
-    <br /><a href="/choose/{{parentPath}}">Level up</a>
-    <br /><a href="/choose/">To the top</a>
+    <a class="btn btn-default" href="/choose/{{parentPath}}"><span class="glyphicon glyphicon-arrow-up"></span> Level up</a>
+    <a class="btn btn-default" href="/choose/"><span class="glyphicon glyphicon-cloud-upload"></span> To the top</a>
     {% endif %}
 </p>

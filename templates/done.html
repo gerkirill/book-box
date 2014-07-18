@@ -1,6 +1,17 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<p>You're done. Here is your OPDS link: ...</p>
-<p>Use your e-mail and password provided upon registration to access your OPDS feed.</p>
+<br/>
+<ul class="nav nav-tabs" role="tablist">
+    <li><a href="/link">1. Link Dropbox</a></li>
+    <li><a href="/choose">2. Choose folder</a></li>
+    <li class="active"><a href="/#">3. Browse OPDS</a></li>
+</ul>
+<h1>You're done!</h1>
+<p>
+    <b>Here is your OPDS link:</b> <em>{{ url('opds') }}</em>
+</p>
+<p>
+    Use your login and password provided upon registration to access your OPDS feed.
+</p>
 {% endblock %}
