@@ -6,12 +6,36 @@ use Dropbox as dbx;
 
 // link dropbox account
 $app->get('/', function () use ($app) {
-    // todo: choose the step to show (with redirect)
-    // if no DB linked - link screen (step 1), if no folder chosen - step 2, if all done - step3 with opds link
-    $authorizeUrl = $app['dbox.auth']->start();
-    return $app['twig']->render('index.html', array('authUrl' => $authorizeUrl));
+    $user = $app['persi']->getCurrentUser();
+    if (!$user->dbAccessToken) {
+        return new RedirectResponse('/link');
+    } elseif (!$user->booksFolder) {
+        return new RedirectResponse('/choose');
+    } else {
+        return new RedirectResponse('/done');
+    }
 })
 ->bind('homepage');
+
+$app->get('/link', function() use ($app) {
+    $authorizeUrl = $app['dbox.auth']->start();
+    return $app['twig']->render('index.html', array('authUrl' => $authorizeUrl));
+});
+
+// select OPDS-published folder
+$app->get('/choose/{path}', function ($path) use ($app) {
+    $folderMetadata = $app['user.dboxClient']->getMetadataWithChildren("/" . $path);
+    return $app['twig']->render( 'account.html', [
+        'entries' => $app['injectBasename']($folderMetadata['contents']),
+        'path' => $path
+    ]);
+})
+->value('path', '')
+->assert('path', '.*');
+
+$app->get('/done', function() use ($app) {
+    return $app['twig']->render('done.html', []);
+});
 
 // finish dropbox auth process
 $app->post('/code', function (Request $request) use ($app) {
@@ -23,11 +47,11 @@ $app->post('/code', function (Request $request) use ($app) {
     $user->dbUserId = $dropboxUserId;
     R::store($user);
 
-    return new RedirectResponse('/account');
+    return new RedirectResponse('/');
 });
 
 // list books in a subpath of OPDS-published folder
-$app->get('/opds/{path}', function($path, Request $request, \Silex\Application $app) {
+$app->get('/opds/{path}', function($path, Request $request) use ($app) {
     $user = $app['persi']->getCurrentUser();
     // connect to dropbox and list contents
     $folderMetadata = $app['user.dboxClient']->getMetadataWithChildren($user->booksFolder . ($path ? "/$path" : ''));
@@ -37,7 +61,7 @@ $app->get('/opds/{path}', function($path, Request $request, \Silex\Application $
 ->assert('path', '.*')
 ->bind('opds');
 
-$app->get('/opds-download/{path}', function($path, Request $request, \Silex\Application $app) {
+$app->get('/opds-download/{path}', function($path, Request $request) use ($app) {
     $user  = $app['persi']->getCurrentUser();
     $path = '/' . $path;
     if (0 !== strpos($path, $user->booksFolder)) {
@@ -53,19 +77,8 @@ $app->get('/opds-download/{path}', function($path, Request $request, \Silex\Appl
 ->assert('path', '.+')
 ->bind('opds-download');
 
-// select dropbox folder to publish with opds (folder chooser)
-$app->get('/account/{path}', function ($path) use ($app) {
-    $folderMetadata = $app['user.dboxClient']->getMetadataWithChildren("/" . $path);
-    return $app['twig']->render( 'account.html', [
-        'entries' => $app['injectBasename']($folderMetadata['contents']),
-        'path' => $path
-    ] );
-})
-->value('path', '')
-->assert('path', '.*');
-
 // display context menu at the folder chooser
-$app->get('/folder-menu/{path}', function($path) use ( $app ) {
+$app->get('/folder-menu/{path}', function($path) use ($app) {
     return $app['twig']->render( 'folder-menu.html', [
         'path' => $path,
         'parentPath' => preg_replace('%/?[^/]*$%', '', $path)
@@ -75,7 +88,7 @@ $app->get('/folder-menu/{path}', function($path) use ( $app ) {
 ->assert('path', '.*');
 
 // currently selected folder to share with opds
-$app->get('/selected-folder', function(Silex\Application $app) {
+$app->get('/selected-folder', function() use ($app) {
     $user = $app['persi']->getCurrentUser();
     return $app['twig']->render( 'selected-folder.html', [
         'folder' => $user->booksFolder
@@ -83,11 +96,11 @@ $app->get('/selected-folder', function(Silex\Application $app) {
 });
 
 // update OPDS-shared folder
-$app->get('/select-folder/{path}', function( Silex\Application $app, $path ){
+$app->get('/select-folder/{path}', function($path ) use ($app) {
     $user = $app['persi']->getCurrentUser();
     $user->booksFolder = '/' . $path;
     R::store($user);
-    return new RedirectResponse( '/account/' . $path );
+    return new RedirectResponse( '/' );
 })
 ->value('path', '')
 ->assert('path', '.*');

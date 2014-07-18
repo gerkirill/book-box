@@ -10,7 +10,7 @@
     {% for entry in entries %}
         <li>
             {% if entry.is_dir %}
-                <a href="/account{{entry.path}}">{{entry.basename}}</a>
+                <a href="/choose{{entry.path}}">{{entry.basename}}</a>
             {% else %}
                 {{entry.basename}}
             {% endif %}
