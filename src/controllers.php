@@ -120,8 +120,27 @@ $app->match('/login', function(Request $request) use ($app) {
 })
 ->bind('login');
 
-$app->match('/register', function() use ($app) {
-    return $app['twig']->render('register.html', []);
+$app->match('/register', function(Request $request) use ($app) {
+    $login = trim($request->get('login'));
+    $data = ['login' => $login, 'password' => $request->get('password')];
+    if ('POST' == $request->getMethod()) {
+        if ('' == $login) {
+            $data['errors']['login']['empty'] = true;
+        } elseif (R::findOne( 'user', ' email = ? ', [$login] )) {
+            $data['errors']['login']['unique'] = true;
+        }
+        if('' == $request->get('password')) {
+            $data['errors']['password']['empty'] = true;
+        }
+        if (empty($data['errors'])) {
+            $newUser = R::dispense('user');
+            $newUser->email = $request->get('login');
+            $newUser->password = $request->get('password');
+            $app['session']->set('user', R::store($newUser));
+            return new RedirectResponse('/');
+        }
+    }
+    return $app['twig']->render('register.html', $data);
 })
 ->bind('register');
 

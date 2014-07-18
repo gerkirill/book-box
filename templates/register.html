@@ -7,20 +7,18 @@
 
 {% block content %}
     <form class="form-signin" role="form" method="post">
-        <h2 class="form-signin-heading">Please sign in</h2>
-        {% if errors.credentials is defined %}
-        <div class="alert alert-danger form-signin-credentials-alert">
-            Entered login credentials are wrong.
-        </div>
-        {% endif %}
-        {% if errors.login is defined and 'empty' in errors.login %}
+        <h2 class="form-signin-heading">Sign up</h2>
+        {% if errors.login.empty is defined %}
             <div class="alert alert-warning form-signin-topwarning">Login can not be empty.</div>
         {% endif %}
+        {% if errors.login.unique is defined %}
+            <div class="alert alert-warning form-signin-topwarning">This login is already taken.</div>
+        {% endif %}
         <input name="login" type="text" class="form-control" placeholder="Login" value="{{ login|default('') }}" autofocus required>
-        <input name="password" type="password" class="form-control" placeholder="Password" required>
-        {% if errors.password is defined and 'empty' in errors.password %}
+        <input name="password" type="password" class="form-control" value="{{ password|default('') }}" placeholder="Password" required>
+        {% if errors.password.empty is defined %}
             <div class="alert alert-warning form-signin-bottomwarning">Password can not be empty.</div>
         {% endif %}
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
     </form>
 {% endblock %}
