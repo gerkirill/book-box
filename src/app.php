@@ -8,12 +8,6 @@ use Silex\Provider\ValidatorServiceProvider;
 use Silex\Provider\ServiceControllerServiceProvider;
 use Dropbox as dbx;
 
-require_once(__DIR__ . '/../lib/redbean/rb.php');
-R::setup(
-    'mysql:host=localhost;dbname=bookbox',
-    'root', 'vagrant'
-);
-
 $app = new Application();
 $app->register(new UrlGeneratorServiceProvider());
 $app->register(new ValidatorServiceProvider());

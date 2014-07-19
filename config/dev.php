@@ -6,6 +6,12 @@ use Silex\Provider\WebProfilerServiceProvider;
 // include the prod configuration
 require __DIR__.'/prod.php';
 
+require_once(__DIR__ . '/../lib/redbean/rb.php');
+R::setup(
+    'mysql:host=localhost;dbname=bookbox',
+    'root', 'vagrant'
+);
+
 // enable the debug mode
 $app['debug'] = true;
 
