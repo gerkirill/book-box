@@ -158,6 +158,10 @@ $app->get('/logout', function() use ($app) {
 })
 ->bind('logout');
 
+$app->get('/navigation', function() use($app) {
+    return $app['twig']->render('navigation.html');
+});
+
 // handling errors
 $app->error(function (\Exception $e, $code) use ($app) {
     if ($app['debug']) {
@@ -194,8 +198,5 @@ $app->before(function(Request $request) use ($app) {
         if (!in_array($route, $publicRoutes) && !$app['session']->get('user')) {
             return new RedirectResponse('/login');
         }
-        $app['persi']->setCurrentUserId($app['session']->get('user'));
     }
-    // add global info about current user
-    $app['twig']->addGlobal('current_user', $app['persi']->getCurrentUser());
 });

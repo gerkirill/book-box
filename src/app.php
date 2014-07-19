@@ -23,6 +23,7 @@ $app->register(new SessionServiceProvider());
 
 $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
     // add custom globals, filters, tags, ...
+    $twig->addGlobal('currentUser', $app['persi']->getCurrentUser());
     $twig->addFilter(new Twig_SimpleFilter('md5', 'md5'));
     return $twig;
 }));
@@ -32,8 +33,10 @@ $app['dbox.auth'] = $app->share(function() {
     $webAuth = new dbx\WebAuthNoRedirect($appInfo, "PHP-Example/1.0");
     return $webAuth;
 });
-$app['persi'] = $app->share(function() {
-    return new Personalizer();
+$app['persi'] = $app->share(function() use ($app) {
+    $persi = new Personalizer();
+    $persi->setCurrentUserId($app['session']->get('user'));
+    return $persi;
 });
 $app['user.dboxClient'] = $app->share(function($app) {
     $user = $app['persi']->getCurrentUser();

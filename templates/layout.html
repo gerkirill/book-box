@@ -19,6 +19,9 @@
 </head>
 
 <body>
+{% if currentUser %}
+    {{ render('/navigation') }}
+{% endif %}
 {% block top %}{% endblock %}
 <div class="container">
 
